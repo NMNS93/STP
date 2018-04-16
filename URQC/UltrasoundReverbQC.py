@@ -13,18 +13,10 @@ from matplotlib import pyplot as plt
 import argparse
 import csv
 import cv2
+import itertools
 import numpy as np
 import os
 import pydicom
-import logging
-
-# Configure argument parser
-parser = argparse.ArgumentParser()
-parser.add_argument('--version', action='version', version='{} v1.0'.format(parser.prog))
-parser.add_argument('input', type=str, help='*.jpg, *.png, *.dcm files', metavar='INPUT', nargs='+')
-parser.add_argument('-o', '--outprefix', type=str, help='Output file prefix')
-opts, args = parser.parse_known_args()
-
 
 class Contour(object):
     """OpenCV contour object for the Ultrasound reverberation pattern.
@@ -223,7 +215,6 @@ class USimg(object):
             """Take a list of coordinates and apply the rotate() function sequentially.
             Yield the radians value (from start) and coordinates of the points.
             """
-            # TODO: range 100. add the stop protocol.
             nrads = 0
             mcords = start_coords
             while sum(filter(lambda x: x is not None, map(coord_filter, mcords))) > 0:
@@ -240,7 +231,7 @@ class USimg(object):
         # Rotate the list of left edge coordinates sequentially by the RADS value across the
         # reverb image. This moves the "line" of coordinates from the left edge to the right.
         # Store the radians and each coordinate in the us_coords list.
-        us_coords = [[0, ledge_coords]] + [coords for coords in sweep(ledge_coords)]
+        us_coords = [[0, ledge_coords]] + [list(coords) for coords in sweep(ledge_coords)]
 
         # Create list of rads and pixel values for the coordinates in us_coords. All coordinates
         # returning None with coord_filter are dropped from the list.
@@ -251,6 +242,34 @@ class USimg(object):
 
         return us_coords, us_data, us_avgs
 
+    def depth_data(self):
+        """Create data for depth calculations and plots. Emulates reading linear array horizontally.
+        """
+        def strip_list(inlist):
+            """Remove leading and trailing 0 values from a list. This removes the empty pixels read
+            from the masked image."""
+            strip = inlist.copy()
+            for index in (0, -1):
+                while strip and (strip[index] == 0):
+                    strip.pop(index)
+            return strip
+
+        # Get a list of lists of pixel values with leading and trailing 0s filtered.
+        # This list is reversed to account for reading of the line in reverse in self.reverb_data()
+        pix_list = [list(reversed(strip_list(i[1]))) for i in self.data]
+
+        # Transpose the nested lists such that each value is stored with others of the same index
+        transp = list(itertools.zip_longest(*pix_list, fillvalue=0))
+
+        # Get the average for each value.
+        depth_avg = [ np.mean(i) for i in transp ]
+
+        # Get the maximum depth and rows read
+        us_depth = list(set([len(i) for i in transp]))[0]
+        rows = len(depth_avg)
+
+        return {'data': transp, 'avg': depth_avg, 'depth': us_depth, 'rows': rows}
+
     def write(self, prefix):
         """Write out data and plots."""
         # Create output directory if it does not exist
@@ -258,9 +277,6 @@ class USimg(object):
         for i in dirlist:
             if not os.path.isdir(i):
                 os.mkdir(i)
-
-        # Add directory to output prefix
-
 
         # Write masked image
         cv2.imwrite("plots/" + prefix + "_urqc_img.png", self.mask)
@@ -274,13 +290,33 @@ class USimg(object):
         plt.plot(rads, avgs)
         plt.savefig(("plots/" + prefix + "_urqc_plot.png"))
         plt.gcf().clear()
+
         # Write average raw data
         with open("data/" + prefix + "_urqc_avgs.csv", 'w') as f:
             writer = csv.writer(f)
             writer.writerows(self.avgs)
 
+        # Write depth plot (averages)
+        depth_data = self.depth_data()
+        plt.plot(depth_data['avg'], 'r,-')
+        plt.savefig(("plots/" + prefix + "_urqc_horiz.png"))
+        plt.gcf().clear()
+
+        # Write depth plot data
+        with open("data/" + prefix + "_urqc_depthdata.csv", 'w') as f:
+            writer = csv.writer(f)
+            writer.writerows([[depth_data['depth']], [depth_data['rows']]])
+            writer.writerows([[depth_data['data']]])
+
 
 if __name__ == "__main__":
+
+    # Configure argument parser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version='{} v1.0'.format(parser.prog))
+    parser.add_argument('input', type=str, help='*.jpg, *.png, *.dcm files', metavar='INPUT', nargs='+')
+    parser.add_argument('-o', '--outprefix', type=str, help='Output file prefix')
+    opts, args = parser.parse_known_args()
 
     for input in opts.input:
         # Create an instance of USimg with input
