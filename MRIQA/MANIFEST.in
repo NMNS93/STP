@@ -1,0 +1,4 @@
+# Include the config files
+include README.md
+include LICENSE.txt
+recursive-include package/config *
