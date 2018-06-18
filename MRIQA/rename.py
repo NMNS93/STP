@@ -2,7 +2,7 @@
 """
 rename.py
 
-Rename MRI quality assurance images following the UCLH medical physics SOP MPB138 (QA ImageHandling).
+Rename MRI quality assurance images following the UCLH medical physics SOP MPB138 (QA ImageHandling)
 
 Version: 1.0
 Created: 30th April 2018
@@ -10,13 +10,14 @@ Created: 30th April 2018
 
 import argparse
 import configparser
+import itertools
 import logging
 import os
-import pydicom
 import re
 import shutil
 import sys
-import itertools
+import pydicom
+
 
 def command_line_parser(args):
     """Parse command line arguments,
@@ -35,7 +36,7 @@ def command_line_parser(args):
 def manage_dirs(opts):
     """Create the output directories if they do not exist, else exit if it they do.
     Args:
-        opts - An argparse.ArgumentParser object with a .i attribute for the input directory.
+        opts - An argparse.ArgumentParser object with an attribute for the input directory (opts.i).
     Returns:
         A tuple with the full paths of the new directories in the format (renamed_directory, unnamed_directory)
     """
@@ -158,7 +159,7 @@ def main(args):
     Args:
         args - A list containing the command line string split by spaces.
     """
-    # Setup logging. Callnig to logger.info('message') will print 'message' to the console.
+    # Setup logging. Calls to logger.info('message') will print 'message' to the console.
     logger = logging.getLogger('mriqa.rename')
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
