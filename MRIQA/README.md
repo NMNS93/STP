@@ -20,27 +20,21 @@ usage: mriqa.py [-h] module args
 
 optional arguments:
   module      name of MRI quality assurance module to run: all, rename
-  args        command line arguments to be passed to downstream module: -i indir, -c config
+  args        command line arguments to be passed to downstream module: 
+  	-i indir	directory containing DICOM files
+  	-c config	config file containing filename regular expressions for validating Series Description
   -h, --help  show this help message and exit
   -v          show program's version number and exit
 ```
 
 ## Modules
+The modules below can be run stand-alone. All modules with the exception of `gui.py` take the 'args' arguments described above.
 
 ### gui.py
 Generates the graphical user interface for the MRI QA software.
 
 ### rename.py
 Rename DICOM images by validating strings in the DICOM Series Description tag.
-```
-usage: rename.py [-h] -i indir -c config [-v]
-
-optional arguments:
-  -i indir    directory containing DICOM files
-  -c config   config file containing filename regular expressions for validating Series Description
-  -h, --help  show this help message and exit
-  -v          show program's version number and exit
-```
 
 ## Development
 
@@ -53,6 +47,6 @@ TBD
 ### TODO
 * Add appropriate logging statements for functions and write logs to output file.
 * Retain only relevant columns in the uniformity output CSV files.
-* Implement OpenCV convexing of the countour to make the mid-point more accurate. Some phantoms contain air bubbles which should be included in the contour shape.
-* Package for use on Windows systems
-* Package for use on MacOS systems
+* Get the vertical uniformity of the MRI images
+* Add the option to add a config.ini file to the GUI
+* Create a windows executeable using py2exe
