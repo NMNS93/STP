@@ -8,7 +8,7 @@ import uniformity
 import rename
 import collections
 
-def command_line_parser(args):
+def command_line_parser(opts):
     """Parse command line arguments,
     Args:
         args - A list containing the command line string split by spaces.
@@ -18,7 +18,7 @@ def command_line_parser(args):
             an object with a .module attribute containing the MRI module. args_list contains the 
             remaining command line arguments to be passed on to the relevant module script.
     """
-    parser = argparse.ArgumentParser(prefix_chars='+', description="Run MRI Quality Assurance Protocols")
+    parser = argparse.ArgumentParser(description="Run MRI Quality Assurance Protocols")
     parser.add_argument("module", type=str, help="Select MRI QA module: rename, uniformity, all")
     return parser.parse_known_args(opts), parser
 
@@ -37,7 +37,7 @@ def main(args):
     # If command line module given is 'all'
     if opts.module == "all":
         # Run all MRI QA modules in the order displayed in MODULES. (Rename must come first).
-        for module, module_main in MODULES:
+        for module, module_main in MODULES.items():
             module_main(args)
     # Else if the module given is in MODULES and run as standalone
     elif opts.module in MODULES.keys():

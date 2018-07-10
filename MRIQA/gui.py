@@ -24,6 +24,9 @@ class MRI():
 
         # Set a title large-font title in the window
         self.windowlabel = Label(self.mainContainer, text="MRI QA", font=("Arial Bold", 30))
+        self.windowlabel.pack()        
+        # Set a disclaimer below the title.
+        self.windowlabel = Label(self.mainContainer, text="WARNING: Not validated for clinical use", font=("Arial Bold", 15))
         self.windowlabel.pack()
         # Set a default prompt string for the input directory. This is changed when the user clicks 
         # the 'Browse' button and is provided as input for the MRI QA script.
@@ -64,7 +67,7 @@ class MRI():
 
     def cancelClick(self, event):
         """Destroy all windows and close the GUI."""
-        self.parent.destroy()
+        self.parent.quit()
 
     def selectDirectory(self):
         """Select the input directory containing MRI QA files for analysis."""
@@ -82,7 +85,7 @@ class MRI():
         win.title("MRI QA")
         msg = Message(win, text=message, width=200)
         msg.pack()
-        cmd = self.parent.destroy if parent_destroy else win.destroy
+        cmd = self.parent.quit if parent_destroy else win.destroy
         button = Button(win, text="Dismiss", command=cmd)
         button.pack()
 
@@ -102,7 +105,7 @@ class MRI():
 
         # If a module has been ticked and a directory has been selected, call the mri qa command
         if module and self.directory_selected:
-            args = [module, '-i', self.fname["text"], '-c', '/home/nana/Documents/MRI_QA/scripts/config.ini']
+            args = [module, '-i', self.fname["text"], '-c', 'config.ini']
             print(args)
             mriqa.main(args)
             self.popupbox('Analysis complete.', 1)

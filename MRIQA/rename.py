@@ -74,7 +74,6 @@ class RenameQA(object):
         self.config=config
 
         # Create a combined list of all DICOM filename regular expressions from the config object
-        self.logger.debug(config.sections())
         self.FNAMES = set(itertools.chain.from_iterable(
                 [config['regex'][row].split(',') for row in config['regex']]
                 ))

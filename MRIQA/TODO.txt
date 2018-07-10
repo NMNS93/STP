@@ -1,0 +1,4 @@
+- Get the vertical uniformity of the MRI images
+- Add the option to add a config.ini file to the GUI
+- Create a windows executeable using py2exe
+

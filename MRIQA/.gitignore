@@ -1,4 +1,1 @@
-build
-dist
-mriqa.egg-info
-*.pyc
+__pycahce__
