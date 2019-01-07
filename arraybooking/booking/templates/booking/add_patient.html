@@ -1,0 +1,16 @@
+{% extends "booking/base_generic.html" %}
+
+{% block content %}
+
+{% load crispy_forms_tags %}
+
+<form method="post" action="{% url 'add_patient' %}">
+{% csrf_token %}
+
+{{ form|crispy }}
+<input type="submit" value="Save" class="btn btn-info"/>
+<input type="hidden" name="next" value="{{ next }}" />
+
+</form>
+
+{% endblock%}

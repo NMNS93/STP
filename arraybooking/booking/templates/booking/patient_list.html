@@ -1,0 +1,45 @@
+{% extends "booking/base_generic.html" %}
+{% block user_name %}
+<span class="text-white"> Logged in as: {{ user }} </span>
+{% endblock %}
+{% block content %}
+
+
+<!-- Button to add array user-->
+<div class="row"> 
+<div class="col-md-10 text-center">
+
+    <!-- Table showing tests: ID, PID, Patient Name -->
+    <h2> </h2>
+    <h3> Patient List </h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Date of birth</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.pid }}</td>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.dob }}</td>
+                <td>{{ patient.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Buttons 'View Patients' & 'Patient list' -->
+<div class="col-md-2">
+    <a href="{% url 'add_patient' %}" class="btn btn-success mt-3">Add Patient</a>
+    <p></p>
+    <a href="{% url 'patient_list' %}" class="btn btn-outline-secondary">Patient list</a>
+    <p></p>
+</div>
+</div>
+{% endblock %}
