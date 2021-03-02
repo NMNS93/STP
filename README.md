@@ -1,2 +1,2 @@
 # STP
-Public repository for personal STP code
+Public repo for STP code
